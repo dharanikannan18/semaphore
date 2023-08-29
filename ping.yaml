@@ -1,0 +1,8 @@
+---
+- name: checking connection 
+  hosts: all
+  become_method: runas
+  become: false
+  tasks:
+        - name: pinging a server to check the connectivity
+          action: ping
