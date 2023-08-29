@@ -1,0 +1,9 @@
+---
+- name: create file
+  hosts: all
+  tasks:
+        - name: creating an empty file
+          file:
+                path: /home/hcligt/k2.txt
+                state: touch
+          become: yes
