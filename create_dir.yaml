@@ -1,0 +1,16 @@
+---
+- name: cloning git repo
+  hosts: all
+  tasks:
+        - name: create a directory
+          shell:
+                "mkdir sema"
+        - name: clone github repo with ansible
+          git:
+              repo: https://github.com/dharanikannan18/semaphore.git
+              dest: /home/hcligt/sema
+              clone: yes
+              update: yes
+              force: yes
+        - name: execute bash file
+          shell: bash {{bash_file}} {{dir_name}} {{file_name}}
