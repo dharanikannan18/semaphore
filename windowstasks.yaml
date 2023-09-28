@@ -10,6 +10,8 @@
     logonusername: "{{logonusername}}"
     tmmusername: "{{tmmusername}}"
     servicename: "{{servicename}}"
+    ivspath: "{{ivspath}}"
+    userivs: "{{userivs}}"
   tasks:
     - name: creating ssrs user
       win_user:
@@ -60,8 +62,8 @@
   tasks:
     - name: Giving full control to registry paramter MSSQLSERVER
       win_acl:
-        path: HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL15.MA\MSSQLServ                                                                                                                                                           er\Parameters
-        user: MSSQL$MA
+        path: "{{ivspath}}"
+        user: "{{userivs}}"
         rights: FullControl
         type: allow
         state: present
