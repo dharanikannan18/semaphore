@@ -1,0 +1,76 @@
+---
+- name: Creating users and groups
+  hosts: sql
+  vars:
+    ssrsusername: "{{ssrsusername}}"
+    password: "{{password}}"
+    ezpayadminusername: "{{ezpayadminusername}}"
+    firstname: "{{firstname}}"
+    lastname: "{{lastname}}"
+    logonusername: "{{logonusername}}"
+    tmmusername: "{{tmmusername}}"
+    servicename: "{{servicename}}"
+  tasks:
+    - name: creating ssrs user
+      win_user:
+        name: "{{ssrsusername}}"
+        password: "{{password}}"
+        password_never_expires: yes
+        state: present
+        groups:
+          - users
+- name: Adding users to the active directory
+  hosts: dc
+  tasks:
+    - name: Adding user ezpayadmin
+      win_domain_user:
+        name: "{{ezpayadminusername}}"
+        firstname: "{{firstname}}"
+        surname: "{{lastname}}"
+        password: IGTtest1
+        password_never_expires: yes
+        state: present
+        groups:
+          - Domain Admins
+
+    - name: Adding logon_as_a_service
+      win_domain_group:
+        name: "{{logonusername}}"
+        state: present
+        scope: global
+    - name: Adding TMMUsers
+      win_group:
+        name: "{{tmmusername}}"
+        state: present
+
+- name: Disabling firewalss in workstation
+  hosts: cws,abs
+  tasks:
+    - name: disabling firewall state for public,private and domain profiles
+      win_firewall:
+        state: disabled
+        profiles:
+          - domain
+          - private
+          - public
+      tags: disable_firewall
+
+- name: Giving full control to registry parameters
+  hosts: sql
+  tasks:
+    - name: Giving full control to registry paramter MSSQLSERVER
+      win_acl:
+        path: HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL15.MA\MSSQLServ                                                                                                                                                           er\Parameters
+        user: MSSQL$MA
+        rights: FullControl
+        type: allow
+        state: present
+
+
+- name: Checking the status of service
+  hosts: cws
+  tasks:
+  - name: check service status
+    win_service:
+      name: "{{servicename}}"
+      state: restarted
