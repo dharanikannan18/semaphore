@@ -1,0 +1,7 @@
+---
+- name: ping windows machine 
+  hosts: all
+  become: false
+  tasks:
+        - name: pinging a server to check the connectivity
+          win_ping:
