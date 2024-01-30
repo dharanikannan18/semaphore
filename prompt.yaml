@@ -1,0 +1,12 @@
+---
+- name: Running IPS steps
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Please proceed with the IPS steps manually by selecring the required Installers in Ezpay Server \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
