@@ -1,0 +1,236 @@
+# ansible-playbook ezpayfinal.yml -e "AccountName=IGTServices AdminGroup=Administrators"
+---
+- name: Starting Ezpay Installation
+  hosts: ezpay
+    # vars:
+    #accountname: "{{ AccountName }}"
+    #admingroup: "{{ AdminGroup }}"
+  vars_files:
+    - ezpayvars/vars.yml
+  tasks:
+    - name: Adding Admingroup to the local User
+      win_group_membership:
+        name: "{{ AdminGroup }}"
+        members:
+          - "{{ AccountName }}"
+        state: present
+
+
+- name: Running IPS steps
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Please proceed with the IPS steps manually by selecring the required Installers in Ezpay Server \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do the IPS steps"
+
+
+- name: Prompting for Rebooting server
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "If Ips says completed, reboot the server if required. Do you want to reboot?"
+      private: false
+  tasks:
+    - name: Rebooting Server
+      ansible.windows.win_reboot:
+        reboot_timeout: 90
+      when: UserInput | lower == "y"
+
+    - name: Proceeding to Further Steps
+      debug:
+        msg: "Proceeding to the further steps of EzPay Install"
+      when: UserInput | lower == "n"
+
+
+# - name: Verifying logs of Ezpay folder
+#   hosts: ezpay
+#   tasks:
+#     - name: If you found any error in the log files, check the error details in the Ezpay Machine under the path C:/Program Files(x86)/IGT Systems/Ezpay Find configuration files
+#       win_find:
+#         paths: C:\sample
+#         patterns: [ '*.log','*.LST' ]
+#       register: found_config_files
+
+#     - name: Searching for error in all the log files
+#       win_shell: |
+#         findstr /M /C:"dharani" "{{ item.path }}"
+#       loop: "{{ found_config_files.files }}"
+#       register: config_search_results
+
+#     - name: Error found in the "{{ item.item.path }}". The installation cannot be proceeded with error in the file. Please make sure to fix the error and start Install again.
+#       debug:
+#         msg: "error found in file: {{ item.item.path }}"
+#       loop: "{{ config_search_results.results }}"
+#       loop_control:
+#         label: "error messages: "
+#       when: item.rc == 0
+
+- name: Searching for error in all the log files
+  hosts: ezpay
+  tasks:
+    - name: searching
+      win_shell: " findstr /n /i /c:'(1)' {{ item }} "
+      args:
+        chdir: C:\Program Files (x86)\IGT Systems\EZPay
+      with_items:
+        - EZPay_Install.log
+
+
+          
+- name: adding user and groups
+  hosts: ezpay
+  tasks:
+    - name: Adding user to the local policy
+      win_user_right:
+        name: SeInteractiveLogonRight
+        users:
+          - "{{ AccountName }}"
+        action: add
+
+          #- name: Adding XVUgroups to the local policy
+          #win_user_right:
+          #name: SeInteractiveLogonRight
+          #users:
+          #- "{{ item }}"
+          #action: add
+          #loop: "{{ XVU_Groups_list }}"
+
+- name: Adding XVU groups to the Ezpayreportusers group
+  hosts: dc
+  ignore_unreachable: true
+  vars_files:
+    - ezpayvars/vars.yml
+  tasks:
+    - name: Check if a Ezpayreportusers group exist
+      win_group:
+        name: EzpayreportUsers
+        state: present
+      register: group_exists
+
+    - debug:
+        msg: EzpayreportUsers group is not present,so skiping this step
+          #ignore_errors: yes
+
+    - name: adding user
+      #if: group_exists.changed
+      win_group_membership:
+        name: EzpayreportUsers
+        members: "{{ item }}"
+        state: present
+      loop: "{{ XVU_Groups_list }}"
+      when: group_exists.changed
+      ignore_errors: yes
+
+- name: Running IPS steps
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Add the XVU groups to the report server in the config workstation machine by accessing the url(http://10.10.35.132/Reports) wth credentials. Note: Use your sql machine IP Address here \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do this step"
+
+- name: Open ezpay admin client
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Launch the application Ezpay Admin Client in $EftServer,Open Ezpay Admin Client, and enter ezpayadmin/IGTtest1 to login \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do this step"
+
+- name: Verify translator as S2S host
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Enrollment > S2S Host->Verify Translator endpoint is enabled and active \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do this step"
+
+
+- name: Open System Control for EFT_Cashless
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Open system control for EFT Cashless and Allow expired messages, and Set to true \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do this step"
+
+
+
+- name: Restarting the services
+  hosts: ezpay
+  tasks:
+    - name: Restarting the IVS SS Service in Eft server
+      service:
+        name: ezpay_ivs_ss_server
+        state: restarted
+
+- name: Reset S2SFrontend and CashierFrontEnd
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Reset S2S Frontend and Cashier frontend in the server,perform this step in ezpay admin client \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do this step"
+
+- name: Restarting the translator service
+  hosts: ABS
+  tasks:
+    - name: Restarting the translator service
+      service:
+        name: AbsTranslator
+        state: restarted
