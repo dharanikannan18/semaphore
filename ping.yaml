@@ -5,4 +5,24 @@
   become: false
   tasks:
         - name: pinging a server to check the connectivity
-          action: ping
+          action: ping- name: Running IPS steps
+  
+  
+- name: running ips steps
+  hosts: ezpay
+  vars_prompt:
+    - name: UserInput
+      prompt: "Please proceed with the IPS steps manually by selecring the required Installers in Ezpay Server \n Press [y] to continue"
+      private: false
+  tasks:
+    - name: Proceeding to the furter steps in Ezpay Install
+      when: UserInput == "y"
+      debug:
+        msg: "Proceeding to the further steps in Ezpay Install"
+
+    - name: Exiting the Installation
+      when: UserInput == "n"
+      fail:
+        msg: "you selected not to do the IPS steps"
+
+
