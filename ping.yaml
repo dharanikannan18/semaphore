@@ -4,8 +4,9 @@
   become_method: runas
   become: false
   tasks:
-        - name: pinging a server to check the connectivity
-          action: ping- name: Running IPS steps
+    - name: pinging a server to check the connectivity
+      action: ping
+      
   
   
 - name: running ips steps
