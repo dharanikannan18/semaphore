@@ -75,12 +75,34 @@
 #         label: "error messages: "
 #       when: item.rc == 0
 
+# - name: Verifying the log files in Ezpay folder
+#   hosts: ezpay
+#   tasks:
+#     - name: Searching if any error was found in the log files to proceed the Installation.
+#       win_shell: " findstr /n /i /c:'error' {{ item }} "
+#       register: search_result
+#         #failed_when: search_result == 0
+#       args:
+#         chdir: C:\Program Files (x86)\IGT Systems\EZPay
+#       with_items:
+#         - EZPay_EFT_Cashless_Install.log
+#         - EZPay_Install_Done.log
+#         - EZPay_Install_ToDo.lst
+#         - EZPay_Server_Install
+
+#     - name: Fail the task and exit play if string is found
+#       fail:
+#         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
+#       when: "'error' not in search_result"
+
+
 - name: Verifying the log files in Ezpay folder
   hosts: ezpay
   tasks:
     - name: Searching if any error was found in the log files to proceed the Installation.
       win_shell: " findstr /n /i /c:'error' {{ item }} "
       register: search_result
+        #failed_when: search_result != 0
         #failed_when: search_result == 0
       args:
         chdir: C:\Program Files (x86)\IGT Systems\EZPay
@@ -90,11 +112,10 @@
         - EZPay_Install_ToDo.lst
         - EZPay_Server_Install
 
-    - name: Fail the task and exit play if string is found
+    - name: If error found, it will exit the play.
       fail:
-        msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
-      when: "'error' not in search_result"
-
+         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
+      when: "'EZPay' not in search_result"
          
 - name: adding user and groups
   hosts: ezpay
