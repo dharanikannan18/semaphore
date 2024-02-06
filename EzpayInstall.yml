@@ -5,8 +5,6 @@
     # vars:
     #accountname: "{{ AccountName }}"
     #admingroup: "{{ AdminGroup }}"
-  vars_files:
-    - ezpayvars/vars.yml
   tasks:
     - name: Adding Admingroup to the local User
       win_group_membership:
