@@ -139,7 +139,7 @@
   hosts: dc
   ignore_unreachable: true
   vars_files:
-    - ezpayvars/vars.yml
+    - vars.yml
   tasks:
     - name: Check if a Ezpayreportusers group exist
       win_group:
