@@ -1,0 +1,17 @@
+---
+XVU groups:
+  - XVUAdmin
+  - XVUAudit
+  - XVUCashier
+  - XVUClub
+  - XVUFloorOps
+  - XVUManager
+  - XVUMarketing
+  - XVUSlots
+  - XVUSoftcount
+  - XVUSupervisor
+  - XVUSurveillance
+  - XVUTech
+  - XVUOfflineClient
+  - XVUSCISUnregisteredPatron
+  - XVUTerminated
