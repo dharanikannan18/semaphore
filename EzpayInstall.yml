@@ -114,7 +114,7 @@
 
     - name: If error found, it will exit the play.
       fail:
-         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
+         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file and start Install again."
       when: "'EZPay' not in search_result"
          
 - name: adding user and groups
