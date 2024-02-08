@@ -73,27 +73,6 @@
 #         label: "error messages: "
 #       when: item.rc == 0
 
-# - name: Verifying the log files in Ezpay folder
-#   hosts: ezpay
-#   tasks:
-#     - name: Searching if any error was found in the log files to proceed the Installation.
-#       win_shell: " findstr /n /i /c:'error' {{ item }} "
-#       register: search_result
-#         #failed_when: search_result == 0
-#       args:
-#         chdir: C:\Program Files (x86)\IGT Systems\EZPay
-#       with_items:
-#         - EZPay_EFT_Cashless_Install.log
-#         - EZPay_Install_Done.log
-#         - EZPay_Install_ToDo.lst
-#         - EZPay_Server_Install
-
-#     - name: Fail the task and exit play if string is found
-#       fail:
-#         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
-#       when: "'error' not in search_result"
-
-
 - name: Verifying the log files in Ezpay folder
   hosts: ezpay
   tasks:
@@ -112,11 +91,13 @@
 
     - name: If error found, it will exit the play.
       fail:
-         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file and start Install again."
+         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking that file(C:\Program Files (x86)\IGT Systems\EZPay) and start Install again."
       when: "'EZPay' not in search_result"
          
 - name: adding user and groups
   hosts: ezpay
+  vars_files:
+    - ezpayvars/vars.yml
   tasks:
     - name: Adding user to the local policy
       win_user_right:
@@ -125,39 +106,34 @@
           - "{{ AccountName }}"
         action: add
 
-          #- name: Adding XVUgroups to the local policy
-          #win_user_right:
-          #name: SeInteractiveLogonRight
-          #users:
-          #- "{{ item }}"
-          #action: add
-          #loop: "{{ XVU_Groups_list }}"
+
+    - name: Adding xvu groups to the local policy
+      win_user_right:
+        name: SeInteractiveLogonRight
+        users: "{{ item }}"
+        action: add
+      loop: "{{ XVU_Groups_Userright }}"
+
 
 - name: Adding XVU groups to the Ezpayreportusers group
   hosts: dc
   ignore_unreachable: true
   vars_files:
-    - vars.yml
+    - ezpayvars/vars.yml
   tasks:
     - name: Check if a Ezpayreportusers group exist
       win_group:
-        name: EzpayreportUsers
+        name: EzPayReportUsers
         state: present
       register: group_exists
 
-    - debug:
-        msg: EzpayreportUsers group is not present,so skiping this step
-          #ignore_errors: yes
-
     - name: adding user
-      #if: group_exists.changed
       win_group_membership:
-        name: EzpayreportUsers
+        name: EzPayReportUsers
         members: "{{ item }}"
         state: present
       loop: "{{ XVU_Groups_list }}"
-      when: group_exists.changed
-      ignore_errors: yes
+      
 
 - name: Running IPS steps
   hosts: ezpay
