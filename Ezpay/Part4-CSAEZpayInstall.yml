@@ -1,6 +1,6 @@
 ---
 - name: Restarting the Translator service in Translator Machine
-  hosts: STN-ABS
+  hosts: STN-Trans
   tasks:
     - name: Restarting the translator service
       win_service:
