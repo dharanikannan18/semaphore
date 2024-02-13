@@ -7,7 +7,7 @@
         connect_timeout: 90
         
 - name: Verifying the log files in Ezpay folder
-  hosts: ezpay
+  hosts: STN-EFT
   gather_facts: false
   tasks:
     - name: Searching if any error was found in the log files to proceed the Installation.
@@ -28,7 +28,7 @@
       when: result == "error"
          
 - name: Adding Users and groups to the local policy
-  hosts: ezpay
+  hosts: STN-EFT
   vars_files:
     - ezpayvars/vars.yml
   tasks:
@@ -49,7 +49,7 @@
 
 
 - name: Adding XVU groups to the Ezpayreportusers group
-  hosts: dc
+  hosts: STN-DC
   ignore_unreachable: true
   vars_files:
     - ezpayvars/vars.yml
