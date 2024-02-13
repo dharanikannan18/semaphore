@@ -1,0 +1,13 @@
+---
+- name: Restarting the services
+  hosts: STN-EFT
+  tasks:
+    - name: Restarting the IVS SS Service in Eft server
+      win_service:
+        name: ezpay_ivs_ss_server
+        state: restarted
+
+    - name: Perform this manual step in Ezpay Admin Client
+      debug:
+        msg:
+        - "Reset S2SFrontend and CashierFrontEnd in the application, and start the Installation by running Part4-CSAEzpayInstall.yml"

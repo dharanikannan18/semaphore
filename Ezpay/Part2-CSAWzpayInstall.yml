@@ -1,0 +1,76 @@
+---
+- name: Rebooting the Machine after doing IPS Step
+  hosts: STN-EFT
+  tasks:
+    - name: Please wait a while until the EFT Server restarts
+      win_reboot:
+        connect_timeout: 90
+        
+- name: Verifying the log files in Ezpay folder
+  hosts: ezpay
+  gather_facts: false
+  tasks:
+    - name: Searching if any error was found in the log files to proceed the Installation.
+      win_shell: " findstr /n /i /c:'error' {{ item }} "
+      register: result
+      ignore_errors: true
+      args:
+        chdir: C:\Program Files (x86)\IGT Systems\EZPay
+      with_items:
+        - EZPay_EFT_Cashless_Install.log
+        - EZPay_Install_Done.log
+        - EZPay_Install_ToDo.lst
+        - EZPay_Server_Install.log
+
+    - name: If error found, it will exit the play.
+      fail:
+         msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking the file(C:\Program Files (x86)\\IGT Systems\\EZPay)and start Install again."
+      when: result == "error"
+         
+- name: Adding Users and groups to the local policy
+  hosts: ezpay
+  vars_files:
+    - ezpayvars/vars.yml
+  tasks:
+    - name: Adding user to the local policy
+      win_user_right:
+        name: SeInteractiveLogonRight
+        users:
+          - "{{ AccountName }}"
+        action: add
+
+
+    - name: Adding XVU groups to the local policy
+      win_user_right:
+        name: SeInteractiveLogonRight
+        users: "{{ item }}"
+        action: add
+      loop: "{{ XVU_Groups_Userright }}"
+
+
+- name: Adding XVU groups to the Ezpayreportusers group
+  hosts: dc
+  ignore_unreachable: true
+  vars_files:
+    - ezpayvars/vars.yml
+  tasks:
+    - name: Check if a Ezpayreportusers group exist
+      win_group:
+        name: EzPayReportUsers
+        state: present
+      register: group_exists
+
+    - name: It is exist, so Adding the XVU groups.
+      win_group_membership:
+        name: EzPayReportUsers
+        members: "{{ item }}"
+        state: present
+      loop: "{{ XVU_Groups_list }}"
+
+    - name: Proceed the next set of Manual steps
+      debug:
+        msg:
+        - "Add the XVU groups to the report server in the config workstation machine by accessing the url (http://{ip}/Reports) with credentials.Note: Use your Report Server IP Address here"
+        - "Launch the application Ezpay Admin Client in EFT Server and verify translator as S2S Host"
+        - "Open the system control option for EFT cashless and Allow expired messages to set True"
+        - "After done the manual steps listed, resume the Installation by running Part3-CSAEzpayInstall.yml"

@@ -1,0 +1,13 @@
+---
+- name: Restarting the Translator service in Translator Machine
+  hosts: STN-ABS
+  tasks:
+    - name: Restarting the translator service
+      win_service:
+        name: AbsTranslator
+        state: restarted
+
+    - name:
+      debug:
+        msg:
+        - "The Install part of Ezpay is completed and run the Confirm-CSAEzpayInstall script to verify the completion"

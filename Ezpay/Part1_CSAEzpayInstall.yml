@@ -1,0 +1,19 @@
+# ansible-playbook ezpayfinal.yml -e "AccountName=IGTServices AdminGroup=Administrators"
+---
+- name: Starting Ezpay Installation
+  hosts: STN-EFT
+    # vars:
+    #accountname: "{{ AccountName }}"
+    #admingroup: "{{ AdminGroup }}"
+  tasks:
+    - name: Adding Admingroup to the local User
+      win_group_membership:
+        name: "{{ AdminGroup }}"
+        members:
+          - "{{ AccountName }}"
+        state: present
+
+    - name: Manual Steps ahead
+      debug:
+        msg: 
+        - "Please proceed with the IPS Steps manually by selecting the required Installers on the EFT server, and after run the part2 Installation script."

@@ -1,0 +1,36 @@
+---
+- name: starting preflight tests
+  hosts: STN-DC,STN-EFT,STN-ABS
+  tasks:
+    - name: Checking all the machines are available to Start the Installation
+      win_ping:
+
+        #    - name: Check whether the .net 3.5 feature Installed on all servers
+        #      ansible.windows.win_feature:
+        #        name: NetFx4ServerFeatures
+        #        state: present
+        #      register: dotnet_feature_result
+        #
+        #    - name: Check whether the .net 4.8 Installed on all Servers
+        #win_shell: |
+        #Get-ItemProperty "HKLM:SOFTWARE\Microsoft\\NET Framework Setup\\NDP\\v4\Full" -ErrorAction SilentlyContinue
+
+        #- name: Check if the database Exists
+        #  hosts: STN-EFT
+        #  tasks:
+        #    - name: Checking Ezpay Database
+        #      ansible.windows.win_shell: |
+        #        Get-Database -Name "EZPay"
+        #      register: result
+        #    - name: Checking EzpayMetaRS database
+        #      ansible.windows.win_shell: |
+        #        Get-Database -Name "EZPayMetaRS"
+        #      register: result
+
+- name: Check whether EzpayReportusers group Created in Dc server
+  hosts: STN-DC
+  tasks:
+    - name: If the EzpayReportusers group not available, it will Create now
+      ansible.windows.win_group:
+        name: EzPayReportUsers
+        state: present

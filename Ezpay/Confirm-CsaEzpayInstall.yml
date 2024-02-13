@@ -1,0 +1,32 @@
+---
+- name: Checking whether the log files are present in the Ezpay folder
+  hosts: STN-EFT
+  tasks:
+    - name: Checking Ezpay application Installed on the EFT server"
+      win_shell: |
+        $applicationName = "Ezpay Server"
+        $installedApps = Get-WmiObject -Class Win32_Product | Select-Object -ExpandProperty Name
+        return $installedApps -contains $applicationName
+
+    - name: Checking EFT cashless server installed on the EFT Server"
+      win_shell: |
+        $applicationName = "EFT Cashless Server"
+        $installedApps = Get-WmiObject -Class Win32_Product | Select-Object -ExpandProperty Name
+        return $installedApps -contains $applicationName
+
+    - name: checking log file
+      win_find:
+        paths: C:\Program Files (x86)\IGT Systems\EZPay
+        patterns: [ '*.log', '*.LST' ]
+
+    - name: Verify whether added the Client connection to Translator ip in the log file"
+      win_shell: |
+        (Get-ChildItem -Path "\\C:\Program Files (x86)\IGT Systems\EZPay\server\ivs_ss_server\Log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Raw | Select-String -quiet "Added client connection")
+
+
+- name: Verify TCKT is OK
+  hosts: STN-Trans
+  tasks:
+    - name: Checking the Service AbsTranslator is running"
+      win_shell: ((Get-Service -Name 'AbsTranslator').Status) -eq "Running"
+
