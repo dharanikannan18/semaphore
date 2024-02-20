@@ -11,3 +11,4 @@
       debug:
         msg:
         - "Reset S2SFrontend and CashierFrontEnd in the application, and start the Installation by running Part4-CSAEzpayInstall.yml"
+        - "The Install part of Ezpay is completed and run the Confirm-CSAEzpayInstall script to verify the completion"
