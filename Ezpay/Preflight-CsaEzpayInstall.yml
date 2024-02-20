@@ -1,34 +1,64 @@
+#ansible-playbook preflightfinal.yml -e "mediapath=C:/map databasename=EZPay"
+
 ---
 - name: starting preflight tests
-  hosts: STN-DC,STN-EFT,STN-ABS
+  hosts: all
+  gather_facts: no
   tasks:
     - name: Checking all the machines are available to Start the Installation
       win_ping:
 
-        #    - name: Check whether the .net 3.5 feature Installed on all servers
-        #      ansible.windows.win_feature:
-        #        name: NetFx4ServerFeatures
-        #        state: present
-        #      register: dotnet_feature_result
-        #
-        #    - name: Check whether the .net 4.8 Installed on all Servers
-        #win_shell: |
-        #Get-ItemProperty "HKLM:SOFTWARE\Microsoft\\NET Framework Setup\\NDP\\v4\Full" -ErrorAction SilentlyContinue
+- name: Checking .net 3.5 feature is installed in all machines
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Shaould have .net 3.5 Installed, if not please Install
+      ansible.windows.win_powershell:
+        script: |
+          Get-WindowsFeature -Name Net-Framework-core
+      register: output
 
-        #- name: Check if the database Exists
-        #  hosts: STN-EFT
-        #  tasks:
-        #    - name: Checking Ezpay Database
-        #      ansible.windows.win_shell: |
-        #        Get-Database -Name "EZPay"
-        #      register: result
-        #    - name: Checking EzpayMetaRS database
-        #      ansible.windows.win_shell: |
-        #        Get-Database -Name "EZPayMetaRS"
-        #      register: result
+    - debug:
+        var: output
+
+    - name: Checking the debug Information
+      debug:
+        # #var: "Installed status : {{ output.output  }}"
+        msg:
+        -  "Please check the Install state from the debug Information whether it is Installed or removed"
+
+- name: Checking .Net 4.8 Installed in all machines
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Should have Installed .net 4.8 installed in all machines, if not please install.
+      ansible.windows.win_powershell:
+        script: |
+          (Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release) -ge "528040"
+
+- name: Checking access to the media files
+  hosts: all
+  gather_facts: no
+  vars:
+    mediapath : "{{ mediapath  }}"
+  tasks:
+    - name: Should have access to the media files
+      ansible.windows.win_stat:
+        path: "{{ mediapath }}"
+
+- name: Checking if database exists
+  hosts: STN-SQLIVS
+  gather_facts: no
+  vars:
+    databasename: "{{ databasename }}"
+  tasks:
+    - name: Should have access to '{{ databasename }}'
+      ansible.windows.win_shell: |
+        (Get-SqlDatabase -Name '{{ databasename }}') -ne $null
 
 - name: Check whether EzpayReportusers group Created in Dc server
   hosts: STN-DC
+  gather_facts: no
   tasks:
     - name: If the EzpayReportusers group not available, it will Create now
       ansible.windows.win_group:
