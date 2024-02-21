@@ -73,15 +73,15 @@
       ansible.windows.win_stat:
         path: "{{ mediapath }}"
 
-- name: Checking if database exists
-  hosts: 10.10.35.131
-  gather_facts: no
-  vars:
-    databasename: "{{ databasename }}"
-  tasks:
-    - name: Should have access to '{{ databasename }}'
-      ansible.windows.win_shell: |
-        (Get-SqlDatabase -Name '{{ databasename }}') -ne $null
+#- name: Checking if database exists
+ # hosts: 10.10.35.131
+  #gather_facts: no
+ # vars:
+  #  databasename: "{{ databasename }}"
+  #tasks:
+  #  - name: Should have access to '{{ databasename }}'
+  #    ansible.windows.win_shell: |
+   #     (Get-SqlDatabase -Name '{{ databasename }}') -ne $null
 
 - name: Check whether EzpayReportusers group Created in Dc server
   hosts: 10.10.35.10
