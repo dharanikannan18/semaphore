@@ -84,7 +84,7 @@
         (Get-SqlDatabase -Name '{{ databasename }}') -ne $null
 
 - name: Check whether EzpayReportusers group Created in Dc server
-  hosts: STN-DC
+  hosts: 10.10.35.10
   gather_facts: no
   tasks:
     - name: If the EzpayReportusers group not available, it will Create now
