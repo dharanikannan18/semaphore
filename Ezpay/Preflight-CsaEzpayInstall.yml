@@ -3,7 +3,7 @@
 ---
 - name: starting preflight tests
   hosts: all
-  gather_facts: false
+  gather_facts: no
   tasks:
     - name: Checking all the machines are available to Start the Installation
       win_ping:
