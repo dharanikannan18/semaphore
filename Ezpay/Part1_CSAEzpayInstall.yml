@@ -1,7 +1,7 @@
 # ansible-playbook ezpayfinal.yml -e "AccountName=IGTServices AdminGroup=Administrators"
 ---
 - name: Starting Ezpay Installation
-  hosts: STN-EFT
+  hosts: 10.10.35.127
     # vars:
     #accountname: "{{ AccountName }}"
     #admingroup: "{{ AdminGroup }}"
