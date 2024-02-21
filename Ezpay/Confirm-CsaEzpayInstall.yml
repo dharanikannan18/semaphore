@@ -25,7 +25,7 @@
     - name: Verify whether added the Client connection to Translator ip in the log file"
       ansible.windows.win_powershell:
         script: |
-          (Get-ChildItem -Path "\\C:\Program Files (x86)\IGT Systems\EZPay\server\ivs_ss_server\Log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Raw | Select-String -quiet "Added client connection")
+          (Get-ChildItem -Path "C:\Program Files (x86)\IGT Systems\EZPay\server\ivs_ss_server\Log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Raw | Select-String -quiet "Added client connection")
 
 - name: verify TCKT is OK
   hosts: 10.10.35.121
