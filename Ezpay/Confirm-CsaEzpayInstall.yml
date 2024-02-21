@@ -1,6 +1,6 @@
 ---
 - name: Checking whether the log files are present in the Ezpay folder
-  hosts: STN-EFT
+  hosts: 10.10.35.127
   gather_facts: no
   tasks:
     - name: Checking Ezpay application Installed on the EFT server"
@@ -28,7 +28,7 @@
           (Get-ChildItem -Path "\\C:\Program Files (x86)\IGT Systems\EZPay\server\ivs_ss_server\Log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Raw | Select-String -quiet "Added client connection")
 
 - name: verify TCKT is OK
-  hosts: STN-Trans
+  hosts: 10.10.35.121
   tasks:
     - name: Checking the status of  the Translator service in Translator Machine
       win_service:
