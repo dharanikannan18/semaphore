@@ -8,33 +8,60 @@
     - name: Checking all the machines are available to Start the Installation
       win_ping:
 
-- name: Checking .net 3.5 feature is installed in all machines
+- name: Checking .net 3.5 feature is enabled in all machines
   hosts: all
-  gather_facts: no
   tasks:
-    - name: Shaould have .net 3.5 Installed, if not please Install
-      ansible.windows.win_powershell:
-        script: |
-          Get-WindowsFeature -Name Net-Framework-core
-      register: output
+    - name: Verifying in all the machines to have .net 3.5 feature enabled in server manager
+      community.windows.win_feature_info:
+        name: Net-Framework-Core
+        register: feature_info
+        
+    - name: .net 3.5 feature not installed, please install and try again
+      fail:
+        msg: "Feature .net 3.5 is not installed. State: {{ feature_info.features[0].install_state }}"
+      when: feature_info.features[0].install_state != "Installed"
 
-    - debug:
-        var: output
+# - name: Checking .net 3.5 feature is installed in all machines
+#   hosts: all
+#   gather_facts: no
+#   tasks:
+#     - name: Shaould have .net 3.5 Installed, if not please Install
+#       ansible.windows.win_powershell:
+#         script: |
+#           Get-WindowsFeature -Name Net-Framework-core
+#       register: output
 
-    - name: Checking the debug Information
-      debug:
-        # #var: "Installed status : {{ output.output  }}"
-        msg:
-        -  "Please check the Install state from the debug Information whether it is Installed or removed"
+#     - debug:
+#         var: output
 
-- name: Checking .Net 4.8 Installed in all machines
+#     - name: Checking the debug Information
+#       debug:
+#         # #var: "Installed status : {{ output.output  }}"
+#         msg:
+#         -  "Please check the Install state from the debug Information whether it is Installed or removed"
+
+# - name: Checking .Net 4.8 Installed in all machines
+#   hosts: all
+#   gather_facts: no
+#   tasks:
+#     - name: Should have Installed .net 4.8 installed in all machines, if not please install.
+#       ansible.windows.win_powershell:
+#         script: |
+#           (Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release) -ge "528040"
+
+- name: Checking .net 4.8 framework is installed
   hosts: all
-  gather_facts: no
   tasks:
-    - name: Should have Installed .net 4.8 installed in all machines, if not please install.
-      ansible.windows.win_powershell:
-        script: |
-          (Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release) -ge "528040"
+    - name: Verifying in all the machines for Ezpay Install
+      ansible.windows.win_reg_stat:
+        path: 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full'
+        name: Release
+      register: net_reginfo
+       
+    - name: .net 4.8 framework is not installed, please install and try again.
+      fail:
+        msg: "Framework .net 4.8 is not installed. It should have version greater than or equal to 528040. Current Release Version: {{ net_reginfo.value }}"
+      when: net_reginfo.value <= 528040
 
 - name: Checking access to the media files
   hosts: all
