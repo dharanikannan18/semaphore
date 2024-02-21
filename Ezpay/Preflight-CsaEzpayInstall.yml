@@ -14,7 +14,7 @@
     - name: Verifying in all the machines to have .net 3.5 feature enabled in server manager
       community.windows.win_feature_info:
         name: Net-Framework-Core
-        register: feature_info
+      register: feature_info
         
     - name: .net 3.5 feature not installed, please install and try again
       fail:
