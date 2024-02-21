@@ -20,7 +20,7 @@
       fail:
         msg: "Feature .net 3.5 is not installed. State: {{ feature_info.features[0].install_state }}"
       when: feature_info.features[0].install_state != "Installed"
-
+      any_errors_fatal: true
 # - name: Checking .net 3.5 feature is installed in all machines
 #   hosts: all
 #   gather_facts: no
