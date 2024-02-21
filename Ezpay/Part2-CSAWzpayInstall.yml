@@ -1,13 +1,13 @@
 ---
 - name: Rebooting the Machine after doing IPS Step
-  hosts: STN-EFT
+  hosts: 10.10.35.127
   tasks:
     - name: Please wait a while until the EFT Server restarts
       win_reboot:
         connect_timeout: 90
         
 - name: Verifying the log files in Ezpay folder
-  hosts: STN-EFT
+  hosts: 10.10.35.127
   gather_facts: false
   tasks:
     - name: Searching if any error was found in the log files to proceed the Installation.
@@ -28,7 +28,7 @@
       when: result.results[1].rc == 0
          
 - name: Adding Users and groups to the local policy
-  hosts: STN-EFT
+  hosts: 10.10.35.127
   vars_files:
     - ezpayvars/vars.yml
   tasks:
@@ -49,7 +49,7 @@
 
 
 - name: Adding XVU groups to the Ezpayreportusers group
-  hosts: STN-DC
+  hosts: 10.10.35.10
   ignore_unreachable: true
   vars_files:
     - ezpayvars/vars.yml
