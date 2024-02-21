@@ -74,7 +74,7 @@
         path: "{{ mediapath }}"
 
 - name: Checking if database exists
-  hosts: STN-SQLIVS
+  hosts: 10.10.35.131
   gather_facts: no
   vars:
     databasename: "{{ databasename }}"
