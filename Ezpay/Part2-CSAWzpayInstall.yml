@@ -25,7 +25,8 @@
     - name: If error found, it will exit the play.
       fail:
          msg: "Error found in the log file. The installation cannot be proceeded with error. Please make sure to fix the error by checking the file under Ezpay folder and start Install again."
-      when: result == "error"
+      when: result.results[1].rc == 0
+
          
 - name: Adding Users and groups to the local policy
   hosts: STN-EFT
