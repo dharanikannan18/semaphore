@@ -1,0 +1,37 @@
+---
+XVU_Groups_list:
+  - XVUAdmin
+  - XVUAudit
+  - XVUCashier
+  - XVUClub
+  - XVUFloorOps
+  - XVUManager
+  - XVUMarketing
+  - XVUSlots
+  - XVUSoftcount
+  - XVUSupervisor
+  - XVUSurveillance
+  - XVUTech
+  - XVUOfflineClient
+  - XVUSCISUnregisteredPatron
+  - XVUTerminated
+
+XVU_Groups_Userright:
+  - STNIGTLAB\XVUAdmin
+  - STNIGTLAB\XVUAudit
+  - STNIGTLAB\XVUCashier
+  - STNIGTLAB\XVUClub
+  - STNIGTLAB\XVUFloorOps
+  - STNIGTLAB\XVUManager
+  - STNIGTLAB\XVUMarketing
+  - STNIGTLAB\XVUOfflineClient
+  - STNIGTLAB\XVUSCISSTM
+  - STNIGTLAB\XVUSCISRegisteredPatron
+  - STNIGTLAB\XVUSlots
+  - STNIGTLAB\XVUSoftcount
+  - STNIGTLAB\XVUSupervisor
+  - STNIGTLAB\XVUSurveillance
+  - STNIGTLAB\XVUTech
+  - STNIGTLAB\XVUOfflineClient
+  - STNIGTLAB\XVUSCISUnregisteredPatron
+  - STNIGTLAB\XVUTerminated
