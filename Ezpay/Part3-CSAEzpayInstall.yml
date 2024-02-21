@@ -1,6 +1,6 @@
 ---
 - name: Restarting the services
-  hosts: STN-EFT
+  hosts: 10.10.35.127
   tasks:
     - name: Restarting the IVS SS Service in Eft server
       win_service:
