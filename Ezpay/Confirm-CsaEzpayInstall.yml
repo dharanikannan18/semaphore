@@ -27,10 +27,10 @@
         script: |
           (Get-ChildItem -Path "\\C:\Program Files (x86)\IGT Systems\EZPay\server\ivs_ss_server\Log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Raw | Select-String -quiet "Added client connection")
 
-- name: Checking the status of  the Translator service in Translator Machine
+- name: verify TCKT is OK
   hosts: STN-Trans
   tasks:
-    - name: Restarting the translator service
+    - name: Checking the status of  the Translator service in Translator Machine
       win_service:
         name: AbsTranslator
         state: started
