@@ -62,6 +62,7 @@
       fail:
         msg: "Framework .net 4.8 is not installed. It should have version greater than or equal to 528040. Current Release Version: {{ net_reginfo.value }}"
       when: net_reginfo.value <= 528040
+      any_errors_fatal: true
 
 - name: Checking access to the media files
   hosts: all
