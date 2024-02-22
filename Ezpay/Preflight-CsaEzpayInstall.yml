@@ -86,6 +86,7 @@
 - name: Check whether EzpayReportusers group Created in Dc server
   hosts: 10.10.35.10
   gather_facts: no
+  ignore_unreachable: true
   tasks:
     - name: If the EzpayReportusers group not available, it will Create now
       ansible.windows.win_group:
