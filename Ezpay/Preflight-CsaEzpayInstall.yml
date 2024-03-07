@@ -21,33 +21,6 @@
         msg: "Feature .net 3.5 is not installed. State: {{ feature_info.features[0].install_state }}"
       when: feature_info.features[0].install_state != "Installed"
       any_errors_fatal: true
-# - name: Checking .net 3.5 feature is installed in all machines
-#   hosts: all
-#   gather_facts: no
-#   tasks:
-#     - name: Shaould have .net 3.5 Installed, if not please Install
-#       ansible.windows.win_powershell:
-#         script: |
-#           Get-WindowsFeature -Name Net-Framework-core
-#       register: output
-
-#     - debug:
-#         var: output
-
-#     - name: Checking the debug Information
-#       debug:
-#         # #var: "Installed status : {{ output.output  }}"
-#         msg:
-#         -  "Please check the Install state from the debug Information whether it is Installed or removed"
-
-# - name: Checking .Net 4.8 Installed in all machines
-#   hosts: all
-#   gather_facts: no
-#   tasks:
-#     - name: Should have Installed .net 4.8 installed in all machines, if not please install.
-#       ansible.windows.win_powershell:
-#         script: |
-#           (Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release) -ge "528040"
 
 - name: Checking .net 4.8 framework is installed
   hosts: all
