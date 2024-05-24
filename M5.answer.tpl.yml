@@ -1,0 +1,18 @@
+---  # doc start
+# YAML answer file for M5 install
+network:
+  #ip: '10.222.95.241'
+  ip: '{{ target }}'
+  defaultbridgeip: '172.17.0.1/16'
+log:
+  opt_max_size: '10m'
+  opt_max_file: '5'
+elk:
+  install: yes
+  systemtimeunit: days
+  systemtimevalue: 30
+  loggertimeunit: days
+  loggertimevalue: 2
+  analyticstimeunit: days
+  analyticstimevalue: 30
+---  # doc end
