@@ -1,0 +1,22 @@
+--- # doc start
+- hosts: M5
+  remote_user: root
+  tasks:
+  - name: Download latest content to remote host
+    get_url:
+      url: http://10.222.132.241/job/LIVE/job/Integration/job/develop/lastSuccessfulBuild/artifact/m5html_content.tgz
+      dest: /home/vra/Installs/m5html_content.tgz
+      owner: vra
+      group: vra
+      mode: '0644'
+      force: yes
+  - name: Copy M5 content install script to remote host
+    copy:
+      src: /home/vra/tools/install_content.sh
+      dest: /home/vra/Installs/install_content.sh
+      owner: vra
+      group: vra
+      mode: '0755'
+      force: yes
+  - name: Change to html shell directory and update IPs
+    command: chdir=/home/vra/Installs ./install_content.sh
