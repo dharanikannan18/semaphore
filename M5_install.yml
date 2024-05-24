@@ -1,0 +1,45 @@
+--- # doc start
+
+# To use, do as below, but change the IP addresses to match the machine you want to deploy
+#
+#    sshpass -p IGTtest1 ansible-playbook M5_install.yml -i 172.16.17.1, -u root -k -e target=172.16.17.1 -e image_m5=m5.iso
+#
+
+
+- hosts: "{{ target }}"
+  remote_user: root
+  tasks:
+  - name: Create remote directory
+    file:
+      path: /home/vra/Installs
+      owner: root
+      group: root
+      state: directory
+      recurse: yes
+      
+  - name: Copy M5 iso to remote host
+    copy:
+      src: "{{image_m5}}"
+      dest: /home/vra/Installs/M5.iso
+      owner: root
+      group: root
+      mode: '0644'
+      
+  - name: Mount M5 iso
+    mount:
+       path: /mnt
+       src: /home/vra/Installs/M5.iso
+       fstype: iso9660
+       opts: ro,noauto
+       state: mounted
+       
+  - name: Transfer answer file
+    template: 
+      src: M5_answer.tpl.yml
+      dest: /home/vra/M5_answer.yml
+      mode: '0777'
+      owner: root
+      group: root
+      
+  - name: Change to mounted dir and run install script
+    command: chdir=/mnt  ./install.sh /home/vra/M5_answer.yml && source /etc/environment
