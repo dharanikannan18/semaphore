@@ -1,0 +1,29 @@
+--- # doc start
+# To use, do as below, but change the IP addresses to match the machine you want to deploy
+#
+#    sshpass -p IGTtest1 ansible-playbook M5_content_latest.yml -i 172.16.17.1, -u root -k -e target=172.16.17.1 -e image_m5=m5html_content.tgz
+#
+
+- hosts: "{{ target }}"
+  remote_user: root
+  tasks:
+  - name: Copy M5 content to remote host
+    copy:
+      src: "{{image_m5}}"
+      dest: /home/vra/Installs/m5html_content.tgz
+      owner: vra
+      group: vra
+      mode: '0644'
+      force: yes
+      
+  - name: Copy M5 content script to remote host
+    copy:
+      src: ../scripts/install_content.sh
+      dest: /home/vra/Installs/install_content.sh
+      owner: vra
+      group: vra
+      mode: '0755'
+      force: yes
+      
+  - name: Change to html shell directory and update IPs
+    command: chdir=/home/vra/Installs ./install_content.sh
