@@ -1,0 +1,7 @@
+---
+- name: Ensure services are strated and in auto mode
+  hosts: igtEFT
+  tasks:
+    win_service:
+      - name: ezpay_ivs_service
+        mode: auto
